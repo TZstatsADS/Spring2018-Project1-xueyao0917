@@ -183,7 +183,6 @@ sentence.list=
   sentence.list%>%
   filter(!is.na(word.count))
 write.csv(sentence.list,"../output/sentenceList.csv")
-sentence.list<- read.csv("~/Documents/GitHub/Spring2018-Project1-xueyao0917/output/sentenceList.csv")
 ```
 
 ## 3.2 Length of Sentences
@@ -257,7 +256,7 @@ From the plot, although one-term presidents had less number of speeches, they st
 
 ## 4.2 Clustering of Emotions
 ### 4.2.1 Heatmap
-```{r}
+```{r, fig.height=2, fig.width=3}
 heatmap.2(cor(sentence.list%>%filter(twoTerm=="Y")%>%select(anger:trust)), 
           scale = "none", 
           col = bluered(100), , margin=c(6, 6), key=F,
