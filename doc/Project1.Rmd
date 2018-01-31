@@ -62,7 +62,7 @@ table(speech.list$twoTerm)
 ```
 
 ## 1.2 Import speech text
-I imported the full text of speeches and created a new column named `text` in `speech.list` to store them.
+I imported the full text of speeches and created a new column named `text` to store them.
 ```{r, message=FALSE, warning=FALSE}
 setwd("~/Documents/GitHub/Spring2018-Project1-xueyao0917/data/InauguralSpeeches")
 speech.list$fullName <- paste(speech.list$File, speech.list$Term, sep = "-")
@@ -98,7 +98,7 @@ ff.all <- tm_map(ff.all, removeWords, mystopwords)
 
 ## 2.2 Word Cloud
 I divided the speeches into three groups, 36 speeches from two-term presidents, 21 speeches from one-term presidents and 1 from Trump.
-```{r, message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
+```{r, message=FALSE, warning=FALSE, fig.height=3, fig.width=8}
 par(mfrow=c(1,3))
 speech.list.sorted <- speech.list[order(speech.list$File),]
 ff.two <- ff.all[speech.list.sorted$twoTerm == "Y"]
@@ -239,7 +239,7 @@ beeswarm(word.count~FileOrdered,
          main="Length of Sentences for Trump")
 ```
 
-From the first two plots, the distributions of number of words in a sentence were close. Most sentences had 10 to 30 words, while one-term presidents tended to have relatively longer sentences. In this aspect, Trump was special again. The length of his sentences was around 5 to 20 and he almost did not use long sentences.
+From the first two plots, the distributions of number of words in a sentence were close. Most sentences had 10 to 30 words, while one-term presidents tended to have relatively longer sentences. In this aspect, Trump was special again. The length of his sentences was around 5 to 20 and he did not use any long sentence.
 
 # 4 Sentiment Analysis
 Then, for each extracted sentence, I applied sentiment analysis using [NRC sentiment lexion](http://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm). "The NRC Emotion Lexicon is a list of English words and their associations with eight basic emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust) and two sentiments (negative and positive). The annotations were manually done by crowdsourcing."
@@ -282,34 +282,37 @@ From the heatmaps, emotions were all divided into two parts based on the correla
 However, Trump had strong positive emotions of trust, joy and anticipation. These emotions were highly related to anger. This was quite different from other presidents.
 
 ### 4.2.2 Barplot
-```{r}
+```{r, fig.height=3, fig.width=8}
 par(mfrow=c(1,3))
 emo.means=colMeans(select(sentence.list%>%filter(twoTerm=="Y"), anger:trust)>0.01)
 col.use=c("red2", "darkgoldenrod1", 
             "chartreuse3", "blueviolet",
             "darkgoldenrod2", "dodgerblue3", 
             "darkgoldenrod1", "darkgoldenrod1")
-barplot(emo.means[order(emo.means)], las=2, col=col.use[order(emo.means)], horiz=T, main="Two Terms")
+barplot(emo.means[order(emo.means)], las=2, cex.axis=1.5, cex.names=1.5,
+        col=col.use[order(emo.means)], horiz=T, main="Two Terms")
 
 emo.means=colMeans(select(sentence.list%>%filter(twoTerm=="N"), anger:trust)>0.01)
 col.use=c("red2", "darkgoldenrod1", 
             "chartreuse3", "blueviolet",
             "darkgoldenrod2", "dodgerblue3", 
             "darkgoldenrod1", "darkgoldenrod1")
-barplot(emo.means[order(emo.means)], las=2, col=col.use[order(emo.means)], horiz=T, main="One Term")
+barplot(emo.means[order(emo.means)], las=2, cex.axis=1.5, cex.names=1.5,
+        col=col.use[order(emo.means)], horiz=T, main="One Term")
 
 emo.means=colMeans(select(sentence.list%>%filter(twoTerm=="T"), anger:trust)>0.01)
 col.use=c("red2", "darkgoldenrod1", 
             "chartreuse3", "blueviolet",
             "darkgoldenrod2", "dodgerblue3", 
             "darkgoldenrod1", "darkgoldenrod1")
-barplot(emo.means[order(emo.means)], las=2, col=col.use[order(emo.means)], horiz=T, main="Trump")
+barplot(emo.means[order(emo.means)], las=2, cex.axis=1.5, cex.names=1.5,
+        col=col.use[order(emo.means)], horiz=T, main="Trump")
 ```
 
-From the barplots, both two groups had more anticipation than joy and more sadness than surprise. However, Trump had more joy than anticipation and more surprise than sadness. In conclusion, comparing to other presidents, Trump was more positive and had less emotions of fear, anger, sadness and disgust.
+From the barplots, both two groups had more anticipation than joy and more sadness than surprise. However, Trump had more joy than anticipation and more surprise than sadness. Furthermore, comparing to other presidents, Trump was more positive and had less emotions of fear, anger, sadness and disgust.
 
 ### 4.2.3 Cluster plot
-```{r, fig.height=3, fig.width=3}
+```{r, fig.height=2, fig.width=3}
 presid.summary=tbl_df(sentence.list)%>%
   group_by(File)%>%
   summarise(
@@ -410,7 +413,7 @@ head(ldaOut.terms,5)
 ```
 
 ## 5.2 Cluster plot
-```{r, message=FALSE, warning=FALSE, fig.height=3, fig.width=3}
+```{r, message=FALSE, warning=FALSE, fig.height=2, fig.width=3}
 topics.hash=c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O")
 corpus.list$ldatopic=as.vector(ldaOut.topics)
 corpus.list$ldahash=topics.hash[ldaOut.topics]
@@ -432,7 +435,7 @@ fviz_cluster(km.res,
              show.clust.cent=FALSE)
 ```
 
-Based on the 15 topics, I created a cluster plot. In this plot, Trump was in the part which included one-term presidents more.
+From the cluster plot, Trump was in the part that most presidents only had one term.
 
 # Conclusion
 In this project, I discussed the differences between one-term and two-term presidents in the use of words, length of sentences, emotions and topics. And then, I analyzed the similarities and differences between Trump and these two groups. 
