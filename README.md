@@ -1,5 +1,5 @@
 # Spring 2018
-# Project 1: What did the presidents say at their inauguation?
+# Project 1: What did the presidents say at their inauguration?
 
 ![image](figs/title.jpg)
 
@@ -8,12 +8,15 @@ This is the first and only *individual* (as opposed to *team*) this semester.
 
 Term: Spring 2018
 
-+ Projec title: Lorem ipsum dolor sit amet
-+ This project is conducted by [your name]
++ Projec title: Will Donald Trump Serve a Second Term?
++ This project is conducted by Xueyao Li.
 
-+ Project summary: [a short summary] Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
++ Project summary: 
+In this project, I discussed the differences between one-term and two-term presidents in the use of words, length of sentences, emotions and topics. And then, I analyzed the similarities and differences between Trump and these two groups. 
 
-Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
+In conclusion, Trump is more likely to be a one-term president for his use of words, emotions and topics. However, Trump is a really special president in the United States, like his short sentences and strong positive sentiment. Therefore, it is hard to make a prediction based on the analysis of inaugural speeches.
+
+Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is organized as follows.
 
 ```
 proj/

@@ -1,13 +1,12 @@
 ---
-title: "Project 1: Will Donald Trump serve a second term?"
+title: "Project 1: Will Donald Trump Serve a Second Term?"
 output: html_notebook
 ---
 
 # Introduction
+In this project, I explored whether there is a relationship between presidents who served two terms and their inaugural speeches. I compared one-term and two-term presidents' inaugural speeches in the use of words, length of sentences, emotions and topics. In addition, I analyzed the similarities and differences between Trump and these two groups and try to predict that will Donald Trump serve a second term?
 
-In this project, we want to explore whether there is a relationship between presidents who served twos terms and their inaugural speeches. We compared one-term and two-term presidents' inaugural speeches in words, sentences, emotions and topics. In addition, we compared these two groups with Trump, and try to predict that will Donald Trump serve a second term? 
-
-# 0 Check and install needed packages. Load the libraries and functions.
+# 0 Load the packages and functions
 ```{r, message=FALSE, warning=FALSE}
 packages.used=c("rvest", "tibble", "qdap",
                 "sentimentr", "gplots", "dplyr",
@@ -48,9 +47,9 @@ library("readxl")
 source("~/Documents/GitHub/Spring2018-Project1-xueyao0917/lib/speechFuncs.R")
 ```
 
-# 1 Data harvest
+# 1 Data Harvest
 ## 1.1 Import speech list
-We imported the xlsx file as speech list (`speech.list`) and divided president into two groups. Except Trump, there were 17 presidents who served two or more terms and 21 presidents who only served on term. Here was the list of two-term presidents.
+I imported the speech list and stored these information in `speech.list`. Except Trump, I divided presidents into two groups. There were 17 presidents who served two or more terms and 21 presidents who only served one term. Here was the list of two-term presidents.
 ```{r}
 speech.list <- read_xlsx("~/Documents/GitHub/Spring2018-Project1-xueyao0917/data/InaugurationInfo.xlsx")
 speech.list$twoTerm <- "N"
@@ -62,8 +61,8 @@ speech.list[58,]$twoTerm <- "T" #Trump
 table(speech.list$twoTerm)
 ```
 
-## 1.2
-We imported the text from the txt file and stored them in ('text').
+## 1.2 Import speech text
+I imported the full text of speeches and created a new column named `text` in `speech.list` to store them.
 ```{r, message=FALSE, warning=FALSE}
 setwd("~/Documents/GitHub/Spring2018-Project1-xueyao0917/data/InauguralSpeeches")
 speech.list$fullName <- paste(speech.list$File, speech.list$Term, sep = "-")
@@ -75,9 +74,11 @@ for(i in seq(nrow(speech.list))) {
 speech.list[58,]$Words <- word_count(speech.list[58,]$text)
 ```
 
-# 2 World Cloud
+# 2 Word Cloud
+Firstly, I analyzed the use of words. To do this, I created the word cloud to show the high-frequency words mentioned in inaugural speeches.
+
 ## 2.1 Text Processing
-We removed extra white space, converted all letters to the lower case, removed stop words, removed empty words due to formatting errors, and removed punctuation. However, after these steps, there were still many meaningless words. Therefore, I created an array named ('mystopwords') to store them, and then removed.
+For text processing, I removed extra white space, converted all letters to the lower case, removed stop words, removed empty words due to formatting errors, and removed punctuation. However, after these steps, there were still many meaningless words. Therefore, I created an array named `mystopwords` to collect these words and removed them later.
 ```{r}
 folder.path="~/Documents/GitHub/Spring2018-Project1-xueyao0917/data/InauguralSpeeches"
 ff.all<-Corpus(DirSource(folder.path))
@@ -95,7 +96,8 @@ mystopwords <- c("will","would","may","shall","can",
 ff.all <- tm_map(ff.all, removeWords, mystopwords)
 ```
 
-##  2.2 Word Cloud
+## 2.2 Word Cloud
+I divided the speeches into three groups, 36 speeches from two-term presidents, 21 speeches from one-term presidents and 1 from Trump.
 ```{r, message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
 par(mfrow=c(1,3))
 speech.list.sorted <- speech.list[order(speech.list$File),]
@@ -145,13 +147,15 @@ wordcloud(tdm.overall.trump$term, tdm.overall.trump$`sum(count)`,
           colors=brewer.pal(9,"Blues"))
 ```
 
-Both groups focused on people and government, wheile Trump focused more on America. However, there was still some differences between one-term and two-term presidents. One-term presidents usually mentioned "rights" and "country" while two-terms presidetents mentioned "peach" and "world" more. As for Trump, he adressed word "right" and "country", like a one-term president.
+From the word cloud, it was obvious that both two-term and one-term presidents focused on "people" and "government" most. However, there were still some differences between one-term and two-term presidents.  Two-term presidents usually mentioned "world" and "peace" while one-term presidents mentioned "country" and "rights" more.
 
-# 3 Sentences Analysis
-We used sentences as units of analysis, as sentences were natural languge units for organizing thoughts and ideas. For each extracted sentence, we applied sentiment analysis using [NRC sentiment lexion](http://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm). "The NRC Emotion Lexicon is a list of English words and their associations with eight basic emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust) and two sentiments (negative and positive). The annotations were manually done by crowdsourcing."
+As for Trump, he was special. Like his slogan *Make America Great Again*, he focused more on "America" and hardly mentioned "government". In this aspect, Trump was more concerned about "country" and "protected", like a one-term president.
+
+# 3 Length of Sentences
+Secondly, I used sentences as units of analysis, as sentences were natural language units for organizing thoughts and ideas. In this part, I focused on the length of sentences.
 
 ## 3.1 Generate list of sentences
-We assigned an sequential id to each sentence in a speech (`sent.id`) and also calculated the number of words in each sentence as sentence length (`word.count`).
+I assigned a sentence id to each sentence in a speech as `sent.id` and calculated the number of words in each sentence as `word.count`.
 ```{r}
 sentence.list=NULL
 for(i in 1:nrow(speech.list)){
@@ -173,16 +177,17 @@ for(i in 1:nrow(speech.list)){
 }
 ```
 
-There were some non-sentences in raw data due to erroneous extra end-of sentence marks. Removed them and saved sentence.list in the output folder.
+There were some non-sentences in raw data due to erroneous extra end-of sentence marks. I removed them and exported sentence.list to a csv file.
 ```{r}
 sentence.list=
   sentence.list%>%
   filter(!is.na(word.count))
 write.csv(sentence.list,"../output/sentenceList.csv")
-#sentence.list<- read.csv("~/Documents/GitHub/Spring2018-Project1-xueyao0917/output/sentenceList.csv")
+sentence.list<- read.csv("~/Documents/GitHub/Spring2018-Project1-xueyao0917/output/sentenceList.csv")
 ```
 
 ## 3.2 Length of Sentences
+To get the similar number of speeches in each group, I only used the first inaugural speech of each president. Therefore, there were 17 speeches from two-term presidents, 21 speeches from one-term presidents and 1 from Trump. 
 ```{r, fig.height=3, fig.width=3}
 par(mfrow=c(3,1))
 #Two Terms
@@ -234,17 +239,21 @@ beeswarm(word.count~FileOrdered,
          main="Length of Sentences for Trump")
 ```
 
-We only used the first inaugural speech of each president, to get the similar number of speeched in each group. From the first two plots, the distributions of number of words in a senetence wer close, and each sentences were usually had 10 to 30 words. Therefore, there was not obviously differences between two groups in length of sentences.
+From the first two plots, the distributions of number of words in a sentence were close. Most sentences had 10 to 30 words, while one-term presidents tended to have relatively longer sentences. In this aspect, Trump was special again. The length of his sentences was around 5 to 20 and he almost did not use long sentences.
 
-# 4 Sentiment Analsis
-## 4.1 Sentence length variation over the course of the speech, with emotions. 
-The presidents usually alternated between long and short sentences and shifted between different sentiments in their speeches. We used different colors to reflect different emotions. 
+# 4 Sentiment Analysis
+Then, for each extracted sentence, I applied sentiment analysis using [NRC sentiment lexion](http://saifmohammad.com/WebPages/NRC-Emotion-Lexicon.htm). "The NRC Emotion Lexicon is a list of English words and their associations with eight basic emotions (anger, fear, anticipation, trust, surprise, sadness, joy, and disgust) and two sentiments (negative and positive). The annotations were manually done by crowdsourcing."
+
+## 4.1 Sentence length variation with emotions
+The presidents usually alternated between long and short sentences and shifted between different sentiments in their speeches.
 ```{r, fig.height=3, fig.width=3}
 par(mfrow=c(3,1))
 f.plotsent.len(In.list=sentence.list, IntwoTerm="Y")
 f.plotsent.len(In.list=sentence.list, IntwoTerm="N")
 f.plotsent.len(In.list=sentence.list, IntwoTerm="T" )
 ```
+
+From the plot, although one-term presidents had less number of speeches, they still were more colorful. It indicated that one-term presidents had stronger emotions than two-term presidents. In this aspect, emotional Trump had a great probability to be a one-term president.
 
 ## 4.2 Clustering of Emotions
 ### 4.2.1 Heatmap
@@ -267,6 +276,10 @@ heatmap.2(cor(sentence.list%>%filter(twoTerm=="T")%>%select(anger:trust)),
           trace = "none", density.info = "none",
           main = "Heatmap for Trump")
 ```
+
+From the heatmaps, emotions were all divided into two parts based on the correlation. One part was anger, fear, disgust and sadness, and the other part was anticipation, surprise, joy and trust. The heatmaps of one-term and two-term presidents were similar. 
+
+However, Trump had strong positive emotions of trust, joy and anticipation. These emotions were highly related to anger. This was quite different from other presidents.
 
 ### 4.2.2 Barplot
 ```{r}
@@ -293,9 +306,9 @@ col.use=c("red2", "darkgoldenrod1",
 barplot(emo.means[order(emo.means)], las=2, col=col.use[order(emo.means)], horiz=T, main="Trump")
 ```
 
-Both two groups had more anticipation than joy and more sadness than surprise. However, Trump had more joy than anticipation and more surprise than sadness.
+From the barplots, both two groups had more anticipation than joy and more sadness than surprise. However, Trump had more joy than anticipation and more surprise than sadness. In conclusion, comparing to other presidents, Trump was more positive and had less emotions of fear, anger, sadness and disgust.
 
-### 4.2.3 Clustering
+### 4.2.3 Cluster plot
 ```{r, fig.height=3, fig.width=3}
 presid.summary=tbl_df(sentence.list)%>%
   group_by(File)%>%
@@ -321,9 +334,11 @@ fviz_cluster(km.res,
              show.clust.cent=FALSE)
 ```
 
+From the cluster plot, Trump was in the part where one-term presidents were more than two-term presidents.
+
 # 5 Topic modeling
-## 5.1 Prepare
-For topic modeling, we prepared a corpus of sentence snipets as follows. For each speech, we started with sentences and prepared a snipet with a given sentence with the flanking sentences. 
+## 5.1 LDA
+For topic modeling, I processed the text and built the document-term matrices. Then I fitted an LDA model with 15 topics. 
 ```{r}
 corpus.list=sentence.list[2:(nrow(sentence.list)-1), ]
 sentence.pre=sentence.list$sentences[1:(nrow(sentence.list)-2)]
@@ -340,10 +355,7 @@ docs <- tm_map(docs, removeNumbers)
 docs <- tm_map(docs, removeWords, stopwords("english"))
 docs <- tm_map(docs, stripWhitespace)
 docs <- tm_map(docs,stemDocument)
-```
 
-Build document-term matrices. 
-```{r}
 dtm <- DocumentTermMatrix(docs)
 #Convert rownames to filenames
 rownames(dtm) <- paste(corpus.list$type, corpus.list$File,
@@ -355,7 +367,6 @@ dtm  <- dtm[rowTotals> 0, ]
 corpus.list=corpus.list[rowTotals>0, ]
 ```
 
-## 5.2 LDA
 ```{r}
 #Set parameters for Gibbs sampling
 burnin <- 4000
@@ -387,6 +398,7 @@ topicProbabilities <- as.data.frame(ldaOut@gamma)
 write.csv(topicProbabilities,file="../output/TopicProbabilities.csv")
 ```
 
+The 15 topics were listed as follows.
 ```{r}
 terms.beta=ldaOut@beta
 terms.beta=scale(terms.beta)
@@ -397,7 +409,7 @@ for(i in 1:k){
 head(ldaOut.terms,5)
 ```
 
-## 5.3 Clustering
+## 5.2 Cluster plot
 ```{r, message=FALSE, warning=FALSE, fig.height=3, fig.width=3}
 topics.hash=c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O")
 corpus.list$ldatopic=as.vector(ldaOut.topics)
@@ -420,4 +432,9 @@ fviz_cluster(km.res,
              show.clust.cent=FALSE)
 ```
 
+Based on the 15 topics, I created a cluster plot. In this plot, Trump was in the part which included one-term presidents more.
+
 # Conclusion
+In this project, I discussed the differences between one-term and two-term presidents in the use of words, length of sentences, emotions and topics. And then, I analyzed the similarities and differences between Trump and these two groups. 
+
+In conclusion, Trump is more likely to be a one-term president for his use of words, emotions and topics. However, Trump is a really special president in the United States, like his short sentences and strong positive sentiment. Therefore, it is hard to make a prediction based on the analysis of inaugural speeches.
